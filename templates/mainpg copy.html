@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Profile</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.theme.min.css">
+  <link rel="stylesheet" href="{{ url_for('get_css', filename='styles.css') }}">
+</head>
+<body>
+    
+  <div id="header">
+    <img id="profile-photo" src="{{ url_for('get_image', filename='profile-photo.jpg') }}" alt="Profile Photo">
+    <h1 id="account-number">Account Number: 1234567890</h1>
+    <p id="balance" class="balance"></p>
+  </div>
+  
+  <div id="hello-message">
+    <script>
+            // var name = prompt("Please enter your name:");
+      document.write("Hello, Josh !");
+    </script>
+  </div>
+
+  <div id="date-inputs">
+    <label for="from-date">From Date:</label>
+    <input type="text" id="from-date" name="from-date" readonly>
+
+
+    <label for="to-date">To Date:</label>
+    <input type="text" id="to-date" name="to-date" readonly>
+
+    <button onclick="getAccountStatement()">Get Statement</button>
+  </div>
+
+
+  <div class="transaction-history">
+    <h2>Transaction History</h2>
+    <div id="transaction-list">
+        <div class="transaction received" id = "transaction received">
+            <span class="type">Received</span>
+            <span class="amount">+ $100</span>
+            <span class="date">26-04-2021</span>
+            <span class="description">zepto</span>
+        </div>
+        <div class="transaction deposit" id = "transaction deposit">
+            <span class="type">Deposited</span>
+            <span class="amount">+ $50</span>
+            <span class="date">26-04-2021</span>
+            <span class="description">zepto</span>
+        </div>
+        <div class="transaction withdrawal" id = "transaction withdrawal">
+            <span class="type">Withdrawal</span>
+            <span class="amount">- $75</span>
+            <span class="date">26-04-2021</span>
+            <span class="description">zepto</span>
+        </div>
+    </div>
+</div>
+<div id="notification-container"></div>
+
+<script>
+    var socket = io();
+    var receivedTransactions = document.getElementById('transaction received');
+    var depositedTransactions = document.getElementById('transaction deposit');
+    var withdrawalTransactions = document.getElementById('transaction withdrawal');
+
+    socket.on('connect', function () {
+        console.log('Connected to the server');
+    });
+
+      socket.on('notification', function (data) {
+            var transactionList = document.getElementById('transaction-list');
+
+            var transactionEntry = document.createElement('div');
+            transactionEntry.classList.add(data.type.toLowerCase());
+            transactionEntry.classList.add('transaction');
+
+            var typeElement = document.createElement('span');
+            typeElement.textContent = data.type.charAt(0).toUpperCase() + data.type.slice(1);
+            typeElement.classList.add('type');
+
+            var amountElement = document.createElement('span');
+            amountElement.textContent = (data.type == 'withdrawal') ? ' - $' + data.amount : ' + $' + data.amount + " ";
+            amountElement.classList.add('amount');
+
+            var dateElement = document.createElement('span');
+            dateElement.textContent = data.date.toLocaleString() + " ";
+            dateElement.classList.add('date');
+
+            var descriptionElement = document.createElement('span');
+            descriptionElement.textContent = data.description;
+            descriptionElement.classList.add('description');
+
+            transactionEntry.appendChild(typeElement);
+            transactionEntry.appendChild(amountElement);
+            transactionEntry.appendChild(dateElement);
+            transactionEntry.appendChild(descriptionElement);
+
+            transactionList.insertBefore(transactionEntry, transactionList.firstChild);
+            const notificationElement = document.createElement('div');
+            notificationElement.classList.add('notification');
+            notificationElement.textContent = data.message;
+
+            // Add the notification to the container
+            const container = document.getElementById('notification-container');
+            container.appendChild(notificationElement);
+
+            // Remove the notification after a certain duration (e.g., 5 seconds)
+            setTimeout(function() {
+              container.removeChild(notificationElement);
+            }, 5000);
+
+        });
+        fetch('/data')
+            .then(response => response.json())
+            .then(data => {
+                // Get the transactionList container
+                var container = document.getElementById('transaction-list');
+
+                // Loop through the data and create HTML elements
+                data.forEach(item => {
+                  var transactionEntry = document.createElement('div');
+                  transactionEntry.classList.add(item.type.toLowerCase());
+                  transactionEntry.classList.add('transaction');
+
+                  var typeElement = document.createElement('span');
+                  typeElement.textContent = item.type.charAt(0).toUpperCase() + item.type.slice(1);
+                  typeElement.classList.add('type');
+
+                  var amountElement = document.createElement('span');
+                  amountElement.textContent = (item.type === 'withdrawal') ? ' - $' + item.amount + " " : ' + $' + item.amount + " ";
+                  amountElement.classList.add('amount');
+
+                  var dateElement = document.createElement('span');
+                  dateElement.textContent = item.date.toLocaleString() + " ";
+                  dateElement.classList.add('date');
+
+                  var descriptionElement = document.createElement('span');
+                  descriptionElement.textContent = item.description;
+                  descriptionElement.classList.add('description');
+
+                  transactionEntry.appendChild(typeElement);
+                  transactionEntry.appendChild(amountElement);
+                  transactionEntry.appendChild(dateElement);
+                  transactionEntry.appendChild(descriptionElement);
+                  // Append the entry to the container
+                  container.insertBefore(transactionEntry,container.firstChild);
+                });
+            })
+            .catch(error => {
+                console.log('Error:', error);
+            });
+    
+</script>
+
+<script>
+  // Function to retrieve the account balance from the server
+  $(document).ready(function() {
+    function updateBalance() {
+    $.getJSON('/account_balance', function(data) {
+      
+        var balanceElement = document.getElementById('balance');
+        balanceElement.textContent = 'Account Balance: $' + data.balance.toFixed(2);
+      });
+    }
+    updateBalance()
+    // Socket.io code to listen for notifications
+    socket.on('notification', function(data) {
+        // Update the account balance when a notification is received
+        updateBalance();
+    });
+  });
+  // Handle the 'new_transaction' event
+  socket.on('new_transaction', function(item) {
+    // Update the webpage with the new transaction
+    var container = document.getElementById('transaction-list');
+
+    var transactionEntry = document.createElement('div');
+    transactionEntry.classList.add(item.type.toLowerCase());
+    transactionEntry.classList.add('transaction');
+
+    var typeElement = document.createElement('span');
+    typeElement.textContent = item.type.charAt(0).toUpperCase() + item.type.slice(1);
+    typeElement.classList.add('type');
+
+    var amountElement = document.createElement('span');
+    amountElement.textContent = (item.type.toLowerCase() == 'withdrawal') ? ' - $' + item.amount + " " : ' + $' + item.amount + " ";
+    amountElement.classList.add('amount');
+
+    var dateElement = document.createElement('span');
+    dateElement.textContent = item.date.toLocaleString() + " ";
+    dateElement.classList.add('date');
+
+    var descriptionElement = document.createElement('span');
+    descriptionElement.textContent = item.description;
+    descriptionElement.classList.add('description');
+
+    transactionEntry.appendChild(typeElement);
+    transactionEntry.appendChild(amountElement);
+    transactionEntry.appendChild(dateElement);
+    transactionEntry.appendChild(descriptionElement);
+    // Append the entry to the container
+    container.insertBefore(transactionEntry,container.firstChild);
+
+    const notificationElement = document.createElement('div');
+    notificationElement.classList.add('notification');
+    notificationElement.textContent = item.message;
+
+    // Add the notification to the container
+    const contain = document.getElementById('notification-container');
+    contain.appendChild(notificationElement);
+
+    // Remove the notification after a certain duration (e.g., 5 seconds)
+    setTimeout(function() {
+      contain.removeChild(notificationElement);
+    }, 5000);
+  });
+
+  
+</script>
+<script>
+  function getAccountStatement() {
+  // Make an AJAX request to the server
+  var xhr = new XMLHttpRequest();
+  var startDate = document.getElementById('from-date').value;
+  var endDate = document.getElementById('to-date').value;
+  xhr.open('GET', '/account_statement?start=' + startDate + '&end=' + endDate);
+  xhr.responseType = 'blob'; // Set the response type to blob
+
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Create a URL object from the response blob
+      var url = URL.createObjectURL(xhr.response);
+
+      // Create a temporary link element
+      var link = document.createElement('a');
+      link.href = url;
+      link.download = 'account_statement.csv'; // Specify the desired filename
+
+      // Programmatically trigger the click event on the link element
+      link.click();
+
+      // Clean up the URL object
+      URL.revokeObjectURL(url);
+    } else {
+      console.log('Error:', xhr.status);
+    }
+  };
+
+  xhr.send();
+}
+
+
+  $(document).ready(function() {
+    $("#from-date, #to-date").datepicker({
+      dateFormat: 'dd-mm-yy',
+      changeMonth: true,
+      changeYear: true,
+      yearRange: '1900:' + new Date().getFullYear(),
+      showButtonPanel: true,
+      showOtherMonths: true,
+      selectOtherMonths: true,
+      showAnim: 'slideDown',
+      duration: 'fast'
+    });
+
+    $("#from-date").datepicker("option", "onSelect", function(selectedDate) {
+      $("#to-date").datepicker("option", "minDate", selectedDate);
+    });
+
+    $("#to-date").datepicker("option", "onSelect", function(selectedDate) {
+      $("#from-date").datepicker("option", "maxDate", selectedDate);
+    });
+  });
+</script>
+
+
+<!-- Your existing script tags -->
+<!-- <script src="/static/js/app.js"></script> -->
+<!-- Add the script for the chat functionality -->
+<script src="/static/js/chat.js"></script>
+<div id="chat-box">
+  <div id="chat-header">
+    Bank Chat
+    <button id="chat-close-btn" onclick="toggleChat()">X</button>
+  </div>
+  <div id="chat-content">
+  <div id="chat-messages"></div>
+  <form id="chat-input">
+    <input type="text" id="message" placeholder="Type your message..." onkeydown="handleKeyPress(event)">
+    <button type="button" onclick="sendMessage()">Send</button>
+  </form>
+</div>
+</div>
+<!-- <button id="chat-toggle-btn" onclick="toggleChat()">Chat</button> -->
+<script>
+let isChatMaximized = true;
+function toggleChat() {
+  var chatContent = document.getElementById('chat-box');
+  chatContent.classList.toggle('minimized');
+
+  var chatCloseBtn = document.getElementById("chat-close-btn");
+
+  if (chatContent.classList.contains("minimized")) {
+    chatCloseBtn.innerText = "Chat";
+    isChatMaximized = false;
+  } else {
+    chatCloseBtn.innerText = "X";
+    isChatMaximized = true;
+  }
+  adjustChatContentHeight();
+}
+function adjustChatContentHeight() {
+  const chatContent = document.getElementById('chat-content');
+  if (isChatMaximized) {
+    chatContent.style.minHeight = "200px"; // Set your maximum height here when maximized
+  } 
+  else {
+    chatContent.style.maxHeight = "0px";
+  }
+  scrollToBottom();
+}
+function scrollToBottom() {
+  const chatMessages = document.getElementById('chat-messages');
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+// Initial call to adjust chat content height
+adjustChatContentHeight();
+</script>
+
+</body>
+</html>
+

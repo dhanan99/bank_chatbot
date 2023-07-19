@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f1f1f1;
+      margin: 0;
+      padding: 0;
+    }
+
+    .chat-container {
+      max-width: 800px;
+      margin: 20px auto;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-header {
+      background-color: #4285F4;
+      color: #fff;
+      padding: 10px;
+      font-size: 18px;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+    }
+
+    .chat-messages {
+      padding: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .message {
+      padding: 5px;
+      margin: 5px;
+      border-radius: 5px;
+      background-color: #f1f1f1;
+    }
+
+    .message.sent {
+      background-color: #DCF8C6;
+      align-self: flex-end;
+    }
+
+    .message.received {
+      background-color: #E6E5ED;
+      align-self: flex-start;
+    }
+
+    .chat-input {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 3px;
+      margin-right: 10px;
+    }
+
+    .chat-input button {
+      background-color: #4285F4;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      padding: 8px 15px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">Chat</div>
+    <div class="chat-messages" id="chat-messages">
+      <!-- Messages will be added here dynamically -->
+    </div>
+    <div class="chat-input">
+      <input type="text" id="message-input" placeholder="Type your message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // Function to send a message
+    function sendMessage() {
+      var messageInput = document.getElementById('message-input');
+      var message = messageInput.value.trim();
+
+      if (message !== '') {
+        // Create a new message element
+        var messageElement = document.createElement('div');
+        messageElement.classList.add('message', 'sent');
+        messageElement.innerText = message;
+
+        // Append the message to the chat messages container
+        var chatMessages = document.getElementById('chat-messages');
+        chatMessages.appendChild(messageElement);
+
+        // Clear the input field after sending the message
+        messageInput.value = '';
+      }
+    }
+  </script>
+</body>
+</html>

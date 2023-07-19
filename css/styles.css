@@ -1,0 +1,491 @@
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+#header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+#profile-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+#profile-photo:hover {
+    transform: scale(1.2);
+
+}
+
+#account-number {
+  font-size: 24px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+#hello-message {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #777;
+  animation: fadein 2s ease;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.transaction {
+  background-color: #fff;
+  margin-bottom: 20px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  animation: slideup 0.5s ease;
+}
+
+.transaction:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  border: 2px solid #ccc;
+}
+
+@keyframes slideup {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.transaction-date {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 5px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.transaction-description {
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+.transaction-amount {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+/* Color code transactions based on their type */
+.transaction.deposit {
+  background-color: #2ecc71;
+  color: #fff;
+}
+
+.transaction.withdrawal {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.transaction.received {
+  background-color: #3498db;
+  color: #fff;
+}
+
+/* Font Styling */
+h1,
+h2 {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: normal;
+}
+
+.transaction-date {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.transaction-description {
+  font-style: italic;
+  letter-spacing: 2px;
+}
+/* Notification Popup */
+.notification-popup {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.notification-popup.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.notification-popup .message {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.notification-popup .close-button {
+  cursor: pointer;
+  font-size: 14px;
+  color: #ccc;
+  text-decoration: none;
+}
+
+.notification-popup .close-button:hover {
+  color: #fff;
+}
+
+/* Button Styles */
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #555;
+}
+
+.button.primary {
+  background-color: #3498db;
+}
+
+.button.primary:hover {
+  background-color: #3d8bd9;
+}
+
+.button.secondary {
+  background-color: #e74c3c;
+}
+
+.button.secondary:hover {
+  background-color: #eb6253;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+
+  #profile-photo {
+    width: 100px;
+    height: 100px;
+  }
+
+  .transaction {
+    padding: 10px;
+  }
+
+  .transaction-amount {
+    font-size: 16px;
+  }
+}
+
+#notification-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  transition: opacity 0.3s;
+}
+
+.notification.show {
+  opacity: 1;
+}
+
+.notification.hide {
+  opacity: 0;
+}
+/* CSS styles for the balance element */
+.balance {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-top: 20px;
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 2px solid #ddd;
+  position: relative;
+}
+
+.balance:before,
+.balance:after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 20px;
+  border-color: transparent transparent #ddd transparent;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.balance:before {
+  border-bottom-color: #ddd;
+}
+
+.balance:after {
+  border-bottom-color: #f5f5f5;
+  top: -38px;
+}
+
+#account-number:hover + .balance,
+.balance:hover {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+
+#chat-box {
+  position: fixed;
+  bottom: 20px; /* Add some distance from the bottom of the webpage */
+  right: 20px; /* Add some distance from the right side of the webpage */
+  width: 400px; /* Increase the width as desired */
+  height: 500px; /* Increase the height as desired */
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+  z-index: 1;
+  
+}
+
+
+/* Styles for the chat header */
+#chat-header {
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  /* margin-bottom: 300px; */
+}
+
+/* Styles for the chat messages and chat input section */
+
+/* Chat messages */
+#chat-messages {
+  /* max-height: 200px; */
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex: 1;
+  flex-direction: column-reverse; /* Reverse the order of messages */
+  /* min-height: 200px;
+  max-height: 400px; */
+  align-items: flex-start;
+  justify-content: flex-end;
+  min-height: 400px;
+  max-height: 100%;
+}
+
+#chat-messages li {
+  list-style-type: none;
+  margin-bottom: 10px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  /* background-color: #007bff; */
+  color: #fff;
+  align-self: flex-end;
+}
+
+
+
+.message {
+  /* background-color: #f2f2f2; */
+  color: #000;
+  border-radius: 10px;
+  padding: 5px 10px;
+  max-width: 80%;
+  word-wrap: break-word;
+  margin-bottom: 5px;
+}
+
+.message.right {
+  background-color: #007bff;
+  color: #fff;
+  align-self: flex-end;
+} 
+
+.chat-messages {
+  padding: 5px;
+  margin: 5px 0;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+}
+#chat-input {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  
+}
+
+#chat-input input[type="text"] {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+#chat-input input {
+  /* Existing styles for chat-input text field */
+  flex: 1;
+}
+#chat-input button {
+  margin-left: 10px;
+  padding: 8px 15px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#chat-close-btn {
+  float: right;
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+#send-button {
+  margin-top: 5px;
+  width: 100%;
+  padding: 5px;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+#chat-content {
+  display: block; /* Show the chat content by default */
+  flex-direction: column; /* Arrange items vertically */
+  min-height: 30px; /* Set the minimum height for the chat content */
+  /* max-height: 200px; */
+  align-items: flex-start;
+  justify-content: flex-end;
+  transition: max-height 0.3s;
+}
+.minimized #chat-content {
+  display: none; /* Hide the chat content when minimized */
+  height: 0;
+  /* max-height: 200px; */
+}
+.maximized #chat-content {
+  min-height: 500px;
+  max-height: 4000px; /* Set the desired height when maximized */
+}
+.sent-message {
+  background-color: #007bff; /* Light Blue */
+  color: #fff; /* White */
+  padding: 8px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  
+  width: auto;
+}
+
+/* Received message style */
+.received-message {
+  background-color: black; /* Pink */
+  color:white; /* Black */
+  padding: 8px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  width: 200px;
+  align-self: flex-start;
+  margin-right: auto;
+}
+/* #chat-hide-btn {
+  background-color: transparent;
+  color: #ffffff;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#chat-hide-btn:focus {
+  outline: none;
+}
+
+#chat-toggle-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+#chat-close-btn {
+  float: right;
+  background-color: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+} */

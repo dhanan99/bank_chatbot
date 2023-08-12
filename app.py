@@ -159,7 +159,7 @@ def pay_credit_card_bill_openai(credit_card_amt):
         # Proceed to pay the bill
         new_balance = account_balance - credit_card_bill
         withdrawal_data = {
-            'type': 'Withdrawal',
+            'type': 'withdrawal',
             'amount': credit_card_bill,
             'date': datetime.now().strftime('%d-%m-%Y %H:%M:%S'),
             'description': 'Credit card bill payment',
@@ -170,14 +170,14 @@ def pay_credit_card_bill_openai(credit_card_amt):
         
         # Return a success message
         withdrawal_data["message"] = 'Credit card bill of current month has been paid!'
-        socketio.emit('new_transaction', withdrawal_data)
-        socketio.emit('notification', {'balance': new_balance})
+        # socketio.emit('new_transaction', withdrawal_data)
+        socketio.emit('notification', withdrawal_data)
         return 'Payment successful!'
     else:
         # Return an error message
         withdrawal_data["message"] = 'Insufficient funds to pay the bill.'
-        socketio.emit('new_transaction', withdrawal_data)
-        socketio.emit('notification', {'balance': new_balance})
+        # socketio.emit('new_transaction', withdrawal_data)
+        socketio.emit('notification', withdrawal_data)
         return 'Insufficient funds to pay the bill.'
 
 def get_account_balance_openai(name):
@@ -337,10 +337,11 @@ def save_message():
         print(second_response)
         if function_name == "get_account_statement_openai":
             response = {'output': "Account statement generated"}
+        elif function_name == "pay_credit_card_bill_openai":
+            response = {'output' : "Credit card bill of current month has been paid!"}
         else:
             oupt = second_response['choices'][0]['message']['content']
-            if "credit card" in oupt:
-                oupt = "Credit card bill paid"
+            
             print(oupt)
             response = {'output': oupt}
     else:
@@ -373,7 +374,7 @@ def index():
 def trigger_notification():
     data = {
         'message': 'A transaction has been triggered!',
-        'amount': 22200.0,
+        'amount': 200.0,
         'type': 'Deposit',
         'date': datetime.now().strftime('%d-%m-%Y'),
         'description': 'salary',
@@ -434,14 +435,14 @@ def pay_credit_card_bill():
         
         # Return a success message
         withdrawal_data["message"] = 'Credit card bill of current month has been paid!'
-        socketio.emit('new_transaction', withdrawal_data)
-        socketio.emit('notification', {'balance': new_balance})
+        # socketio.emit('new_transaction', withdrawal_data)
+        socketio.emit('notification', withdrawal_data)
         return jsonify({'message': 'Payment successful!'})
     else:
         # Return an error message
         withdrawal_data["message"] = 'Insufficient funds to pay the bill.'
         socketio.emit('new_transaction', withdrawal_data)
-        socketio.emit('notification', {'balance': new_balance})
+        # socketio.emit('notification', {'balance': new_balance})
         return jsonify({'message': 'Insufficient funds to pay the bill.'})
 
 @app.route('/account_statement', methods=['GET'])

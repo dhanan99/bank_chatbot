@@ -207,19 +207,19 @@ def get_account_balance_openai(name):
 
     return str(account_balance)
 
-
+@app.route('/get_account_statement_openai', methods=['POST'])
 def get_account_statement_openai(start_date,end_date):
     
     start_date = str(start_date)
     end_date = str(end_date)
     date_format = "%d-%m-%Y"
-
+    data = {"start_date" : start_date, "end_date" : end_date}
     # Convert start_date and end_date to datetime objects
     start_datetime = datetime.strptime(start_date, date_format).timestamp()
     end_datetime = datetime.strptime(end_date, date_format).timestamp()
     
-    print(start_date)
-    print(end_date)
+    print(start_datetime)
+    print(end_datetime)
     # end_date += timedelta(days=1)
     # Query the transactions collection for transactions within the date range
     filtered_transactions = collection.find({
@@ -247,10 +247,12 @@ def get_account_statement_openai(start_date,end_date):
     csv_writer.writerows(csv_data)
 
     # Create the response with the CSV data
-    response = Response(csv_buffer.getvalue(), mimetype='text/csv')
+    response = Response(csv_buffer.getvalue(), content_type='text/csv')
     response.headers.set('Content-Disposition', 'attachment', filename='account_statement.csv')
-
-    return "account statement downloaded"
+    # print(response)
+    # return response
+    socketio.emit('server_data_event', {'data': data})
+    return "yes"
 
 
 @app.route('/save_message', methods=['POST'])
@@ -261,8 +263,10 @@ def save_message():
         model="gpt-3.5-turbo-0613",
         
         # This is the chat message from the user
-        messages=[{"role": "user", "content": message}],
-    
+        messages=[{"role": "user", "content": message},
+                #   {"role": "user", "content" : "you are a chatbot which gives timestamp in a ISO 8601 format so make sure after getting input of start date and end date convert them to ISO 8601 format and donot ask from user for any specific foemat"}
+                  ],
+        
         
         functions=function_descriptions,
         function_call="auto",
@@ -314,13 +318,14 @@ def save_message():
                 end_date = function_args.get("end_date"),
                 
             )
-            print(function_response)
+            # print(function_response)
 
         second_response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo-0613",
             messages=[
                 {"role": "user", "content": message},
                 ai_response_message,
+                
                 {
                     "role": "function",
                     "name": function_name,
@@ -330,14 +335,17 @@ def save_message():
         )
         # ['choices'][0]['message']['content']
         print(second_response)
-        oupt = second_response['choices'][0]['message']['content']
-        if "credit card" in oupt:
-            oupt = "Credit card bill paid"
-        print(oupt)
-        response = {'output': oupt}
+        if function_name == "get_account_statement_openai":
+            response = {'output': "Account statement generated"}
+        else:
+            oupt = second_response['choices'][0]['message']['content']
+            if "credit card" in oupt:
+                oupt = "Credit card bill paid"
+            print(oupt)
+            response = {'output': oupt}
     else:
         response = {'output':ai_response_message['content']}
-
+    
     print(response)
     return response
 @app.route('/data')
@@ -439,16 +447,18 @@ def pay_credit_card_bill():
 @app.route('/account_statement', methods=['GET'])
 def get_account_statement():
     
-    start_date = request.args.get('start')
-    end_date = request.args.get('end')
+    start_date = str(request.args.get('start'))
+    end_date = str(request.args.get('end')) 
+    print(start_date)
+    print(end_date)
     date_format = "%d-%m-%Y"
 
     # Convert start_date and end_date to datetime objects
     start_datetime = datetime.strptime(start_date, date_format).timestamp()
     end_datetime = datetime.strptime(end_date, date_format).timestamp()
     
-    print(start_date)
-    print(end_date)
+    print(start_datetime)
+    print(end_datetime)
     # end_date += timedelta(days=1)
     # Query the transactions collection for transactions within the date range
     filtered_transactions = collection.find({

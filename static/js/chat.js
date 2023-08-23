@@ -70,6 +70,15 @@ socket.on('server_data_event', function(data) {
   console.log('Received data from server:', data);
   get_account_statement_openai(data);
 });
+
+socket.on('date_error_handler', function() {
+  // Handle received data from server
+  console.log('Date error handler received');
+  $(function() {
+    $("#datepicker").datepicker();
+  });
+});
+
 function get_account_statement_openai(data) {
   // Make an AJAX request to the server
   var xhr = new XMLHttpRequest();

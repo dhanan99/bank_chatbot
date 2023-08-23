@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, send_from_directory, request,
 from flask_socketio import SocketIO, emit
 import eventlet
 from pymongo import MongoClient
+from function_descriptors import function_descriptions
 from bson.objectid import ObjectId
 import requests
 from datetime import datetime,timedelta
@@ -16,6 +17,9 @@ from reportlab.lib.pagesizes import letter
 from io import StringIO
 import openai
 from dotenv import load_dotenv
+from utils.date_helper import date_handler
+
+
 
 load_dotenv()
 
@@ -31,99 +35,7 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 # Existing routes for account statement and other functionality
 
 # Route to fetch chat messages (replace this with your actual implementation)
-function_descriptions = [
-    {
-        "name": "get_current_weather",
-        "description": "Get the current weather in a given location",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "location": {
-                    "type": "string",
-                    "description": "The city and state, e.g. San Francisco, CA",
-                },
-                "unit": {
-                    "type": "string",
-                    "description": "The temperature unit to use. Infer this from the users location.",
-                    "enum": ["celsius", "fahrenheit"]
-                },
-            },
-            "required": ["location", "unit"],
-        },
-    },
-    {
-        "name": "trigger_notification_openai",
-        "description": "Add a transaction to the database",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "integer",
-                    "description": "The amount of transaction done.",
-                },
-                "type": {
-                    "type": "string",
-                    "description": "Type of transaction done.",
-                    "enum": ["deposit", "received","withdrawl"]
-                },
-                "description": {
-                    "type": "string",
-                    "description": "Description of the transaction triggered",
-                },
-            },
-            "required": ["amount", "type","description"],
-        },
-    },
-    {
-        "name": "pay_credit_card_bill_openai",
-        "description": "Pay the credit card bill",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "credit_card_amt": {
-                    "type": "integer",
-                    "description": "Amount of credit card bill",
-                },
-                
-            },
-            "required": ["credit_card_amt"],
-        },
-    },
-    {
-        "name": "get_account_balance_openai",
-        "description": "Get the current account balance",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "name of the bank account holder",
-                },
-                
-            },
-            # "required": ["credit_card_amt"],
-        },
-    },
-    {
-        "name": "get_account_statement_openai",
-        "description": "Get the account statement",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "start_date": {
-                    "type": "string",
-                    "description": "start date of the account statement",
-                },
-                "end_date": {
-                    "type": "string",
-                    "description": "end date of the account statement",
-                },
-                
-            },
-            "required": ["start_date","end_date"],
-        },
-    },
-]
+
 def get_current_weather(location, unit):
     
     """Get the current weather in a given location"""
@@ -212,6 +124,10 @@ def get_account_statement_openai(start_date,end_date):
     
     start_date = str(start_date)
     end_date = str(end_date)
+    start_date = date_handler(start_date)
+    end_date = date_handler(end_date)
+    if start_date == "Date time picker" or end_date == "Date time picker":
+        return "Date time picker" 
     date_format = "%d-%m-%Y"
     data = {"start_date" : start_date, "end_date" : end_date}
     # Convert start_date and end_date to datetime objects
@@ -318,8 +234,10 @@ def save_message():
                 end_date = function_args.get("end_date"),
                 
             )
+            if function_response == "Date time picker":
+                socketio.emit('date_error_handler')
             # print(function_response)
-
+        
         second_response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo-0613",
             messages=[

@@ -81,9 +81,10 @@
             var typeElement = document.createElement('span');
             typeElement.textContent = data.type.charAt(0).toUpperCase() + data.type.slice(1);
             typeElement.classList.add('type');
-
+            console.log(data.type
+            );
             var amountElement = document.createElement('span');
-            amountElement.textContent = (data.type == 'withdrawal') ? ' - $' + data.amount : ' + $' + data.amount + " ";
+            amountElement.textContent = (data.type === 'withdrawal') ? ' - $' + data.amount + " " : ' + $' + data.amount + " ";
             amountElement.classList.add('amount');
 
             var dateElement = document.createElement('span');

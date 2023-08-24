@@ -30,8 +30,8 @@ function_descriptions = [
                 },
                 "type": {
                     "type": "string",
-                    "description": "Type of transaction done.",
-                    "enum": ["deposit", "received","withdrawl"]
+                    "description": "It tells that whether money is deposited to our account or transferred from somenone or withdrawn from atm. When money is transferred from my account give value of type argument as withdrawl and if money is getting deposited to my account give type as received.",
+                    "enum": ["deposit", "received","withdrawal"]
                 },
                 "description": {
                     "type": "string",

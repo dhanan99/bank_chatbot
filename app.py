@@ -36,23 +36,11 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # Route to fetch chat messages (replace this with your actual implementation)
 
-def get_current_weather(location, unit):
-    
-    """Get the current weather in a given location"""
-    
-    weather_info = {
-        "location": location,
-        "temperature": "72",
-        "unit": unit,
-        "forecast": ["sunny", "windy"],
-    }
-    return json.dumps(weather_info)
-
 def trigger_notification_openai(amount,type,description):
     data = {
         'message': 'A transaction has been triggered!',
         'amount': amount,
-        'type': type,
+        'type': type.lower(),
         'date': datetime.now().strftime('%d-%m-%Y'),
         'description': description,
         'timestamp': datetime.now().timestamp()
@@ -60,6 +48,7 @@ def trigger_notification_openai(amount,type,description):
     data["_id"] = str(ObjectId())
     collection.insert_one(data)
     socketio.emit('notification', data)
+    print(data["type"])
     return "Transaction triggered"
 
 def pay_credit_card_bill_openai(credit_card_amt):
@@ -198,7 +187,6 @@ def save_message():
     # unit=user_unit,
     # )
     available_functions = {
-            "get_current_weather": get_current_weather,
             "get_account_balance_openai": get_account_balance_openai,
             "trigger_notification_openai": trigger_notification_openai,
             "pay_credit_card_bill_openai": pay_credit_card_bill_openai,

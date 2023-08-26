@@ -1,4 +1,4 @@
-﻿BankConnect: Revolutionize Your Banking Experience
+#﻿BankConnect: Revolutionize Your Banking Experience
 Welcome to BankConnect, a cutting-edge banking application that empowers you to effortlessly manage your finances, gain valuable transaction insights, and enjoy the convenience of an AI-powered chatbot right at your fingertips. With BankConnect, you'll experience a new level of banking convenience and intelligence.
 
 Key Features

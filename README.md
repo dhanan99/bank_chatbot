@@ -47,5 +47,9 @@ http://localhost:400
 https://github.com/dhanan99/bank_chatbot/assets/39912499/c24b2e89-2fb5-4188-b0f6-b4d240b0373b
 
 
+
+https://github.com/dhanan99/bank_chatbot/assets/39912499/4dcfccb0-139e-429e-af53-a30da4c7b874
+
+
  
 ![image](https://github.com/dhanan99/bank_chatbot/assets/39912499/9918e4e3-625f-42fe-a6c4-1b7224da9454)

@@ -81,8 +81,7 @@
             var typeElement = document.createElement('span');
             typeElement.textContent = data.type.charAt(0).toUpperCase() + data.type.slice(1);
             typeElement.classList.add('type');
-            console.log(data.type
-            );
+            console.log(data.type);
             var amountElement = document.createElement('span');
             amountElement.textContent = (data.type === 'withdrawal') ? ' - $' + data.amount + " " : ' + $' + data.amount + " ";
             amountElement.classList.add('amount');
@@ -134,7 +133,7 @@
                   var amountElement = document.createElement('span');
                   amountElement.textContent = (item.type === 'withdrawal') ? ' - $' + item.amount + " " : ' + $' + item.amount + " ";
                   amountElement.classList.add('amount');
-
+                  console.log("Amount:",item.amount)
                   var dateElement = document.createElement('span');
                   dateElement.textContent = item.date.toLocaleString() + " ";
                   dateElement.classList.add('date');
@@ -188,7 +187,7 @@
     typeElement.classList.add('type');
 
     var amountElement = document.createElement('span');
-    amountElement.textContent = (item.type.toLowerCase() == 'withdrawal') ? ' - $' + item.amount + " " : ' + $' + item.amount + " ";
+    amountElement.textContent = (item.type.toLowerCase() === 'withdrawal') ? ' - $' + item.amount + " " : ' + $' + item.amount + " ";
     amountElement.classList.add('amount');
 
     var dateElement = document.createElement('span');

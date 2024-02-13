@@ -22,10 +22,11 @@ from utils.date_helper import date_handler
 
 
 load_dotenv()
-
-client = MongoClient('mongodb://localhost:27017')
+mongo_uri = "mongodb+srv://nuusr:abcd1234@cluster0.czx1urd.mongodb.net/"
+# client = MongoClient('mongodb://localhost:27017')
+client = MongoClient(mongo_uri)
 db = client['bankdata']  # Replace with your database name
-collection = db['transactions']  # Replace with your collection name
+collection = db['bankdata']  # Replace with your collection name
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['DEBUG'] = True

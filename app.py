@@ -31,7 +31,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['DEBUG'] = True
 socketio = SocketIO(app, async_mode='eventlet')
-openai.api_key = os.getenv('OPENAI_API_KEY')
+openai.api_key = "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"
 
 # Existing routes for account statement and other functionality
 

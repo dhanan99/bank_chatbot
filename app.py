@@ -22,7 +22,7 @@ from utils.date_helper import date_handler
 
 
 load_dotenv()
-mongo_uri = "mongodb+srv://nuusr:abcd1234@cluster0.czx1urd.mongodb.net/"
+mongo_uri = os.getenv("MONGODB_URI")
 # client = MongoClient('mongodb://localhost:27017')
 client = MongoClient(mongo_uri)
 db = client['bankdata']  # Replace with your database name
@@ -31,7 +31,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['DEBUG'] = True
 socketio = SocketIO(app, async_mode='eventlet')
-openai.api_key = "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"
+openai.api_key = os.getenv('OPENAI_API_KEY')
+
 
 # Existing routes for account statement and other functionality
 
